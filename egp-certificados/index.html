@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Verificador de Certificados EGP</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+<style>
+/* Layout: coluna única centrada; faixa azul do evento no topo, cartão de consulta e cartão de resultado com a mesma largura */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --fg: #1d2b3a;
+  --muted: #5a6675;
+  --line: #d9e0e8;
+  --navy: #0b355d;
+  --lime: #b8ca64;
+  --teal: #0a8a8f;
+  --ok-bg: #eef5d6;
+  --ok-fg: #2f4a0f;
+  --bad-bg: #fbe7e4;
+  --bad-fg: #8a1f14;
+  --band-fg: #ffffff;
+  --font: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #07182b; --surface: #0e2a47; --fg: #e8eef5; --muted: #9fb0c3; --line: #25456a;
+    --ok-bg: #26330f; --ok-fg: #d4e58a; --bad-bg: #3d1713; --bad-fg: #ffb4aa; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #07182b; --surface: #0e2a47; --fg: #e8eef5; --muted: #9fb0c3; --line: #25456a;
+  --ok-bg: #26330f; --ok-fg: #d4e58a; --bad-bg: #3d1713; --bad-fg: #ffb4aa; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.55; margin: 0; }
+.band { background: var(--navy); color: var(--band-fg); border-bottom: 5px solid var(--lime); padding-block: 28px 26px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); margin-top: calc(-1 * env(safe-area-inset-top, 0px)); padding-top: calc(env(safe-area-inset-top, 0px) + 28px); }
+.wrap { max-width: 640px; margin: 0 auto; }
+.eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--lime); font-weight: 500; margin: 0 0 6px; }
+h1 { font-size: clamp(24px, 6vw, 32px); line-height: 1.15; margin: 0 0 6px; font-weight: 700; text-wrap: balance; }
+.band p { margin: 0; font-weight: 300; opacity: .9; }
+main { padding-block: 24px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+label { display: block; font-weight: 500; margin-bottom: 8px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+input[type=text] { flex: 1 1 220px; min-width: 0; font: 500 16px/1.2 var(--font); letter-spacing: .06em; text-transform: uppercase; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+input[type=text]:focus-visible, button:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+button { font: 600 15px/1 var(--font); padding: 12px 22px; border-radius: 8px; border: 0; background: var(--navy); color: #fff; cursor: pointer; }
+:root[data-theme="dark"] button { background: var(--lime); color: #0b355d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) button { background: var(--lime); color: #0b355d; } }
+.hint { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+.result[hidden] { display: none; }
+.badge { display: inline-block; font-weight: 600; font-size: 13px; padding: 4px 12px; border-radius: 999px; margin-bottom: 12px; }
+.ok .badge { background: var(--ok-bg); color: var(--ok-fg); }
+.bad .badge { background: var(--bad-bg); color: var(--bad-fg); }
+.result h2 { margin: 0 0 14px; font-size: 20px; line-height: 1.25; text-wrap: balance; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; margin: 0; }
+dt { color: var(--muted); font-size: 13px; padding-top: 2px; }
+dd { margin: 0; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+.test { background: var(--ok-bg); color: var(--ok-fg); border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 16px; }
+@media (max-width: 440px) { dl { grid-template-columns: 1fr; gap: 2px; } dd { margin-bottom: 8px; } }
+</style>
+
+</head>
+<body>
+<div class="band"><div class="wrap">
+  <p class="eyebrow">DIDEPE · DIGPE · IFRN</p>
+  <h1>Verificador de certificados</h1>
+  <p>XVII Encontro de Gestão de Pessoas do IFRN (EGP 2026)</p>
+</div></div>
+
+<main><div class="wrap">
+  <div class="test"><strong>Ambiente de teste.</strong> Contém apenas certificados de exemplo.</div>
+
+  <form class="card" id="f" autocomplete="off">
+    <label for="codigo">Código de autenticação</label>
+    <div class="row">
+      <input type="text" id="codigo" name="codigo" placeholder="EGP26-XXXX-XXXX-XXXX" inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="40">
+      <button type="submit">Verificar</button>
+    </div>
+    <p class="hint">O código está no rodapé do certificado, ao lado do QR code.</p>
+  </form>
+
+  <section class="card result" id="res" hidden aria-live="polite"></section>
+</div></main>
+
+<script>
+var LISTA = {"89f9ec93851d7693dfe04fc0ca0d963530c83eb82484401916492a0b6f6fedd1": {"n": "Erasmo J. P. de Oliveira", "p": "Coordenador(a)", "h": "16h", "e": "XVII Encontro de Gestão de Pessoas do IFRN - EGP 2026", "d": "23/11/2026"}, "b7ebb3c16c3825cc11f2ce9f2d37b11f6869be1ca98b01a89fbd4f49d9b5471a": {"n": "Erasmo J. P. de Oliveira", "p": "Participante", "h": "8h50", "e": "XVII Encontro de Gestão de Pessoas do IFRN - EGP 2026", "d": "23/11/2026"}};
+var $ = function (id) { return document.getElementById(id); };
+function norm(c) { return String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (m) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]; }); }
+async function sha256(t) {
+  var b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+  return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, "0"); }).join("");
+}
+async function verificar(cod) {
+  var n = norm(cod), res = $("res");
+  if (n.length < 8) { res.hidden = true; return; }
+  var h = await sha256(n), r = LISTA[h];
+  res.hidden = false;
+  if (r) {
+    res.className = "card result ok";
+    res.innerHTML = '<span class="badge">Certificado autêntico</span><h2>' + esc(r.e) + '</h2><dl>' +
+      '<dt>Nome</dt><dd>' + esc(r.n) + '</dd><dt>Participação</dt><dd>' + esc(r.p) + '</dd>' +
+      '<dt>Carga horária</dt><dd>' + esc(r.h) + '</dd><dt>Emissão</dt><dd>' + esc(r.d) + '</dd></dl>' +
+      '<p class="hint">Confira estes dados com o certificado em mãos.</p>';
+  } else {
+    res.className = "card result bad";
+    res.innerHTML = '<span class="badge">Código não encontrado</span><h2>Não localizamos este código</h2>' +
+      '<p class="hint">Confira se digitou todos os caracteres. Se o problema continuar, escreva para didepe@ifrn.edu.br.</p>';
+  }
+}
+$("f").addEventListener("submit", function (e) { e.preventDefault(); verificar($("codigo").value); });
+(function () {
+  var q = "";
+  try { q = new URLSearchParams(location.search).get("c") || ""; } catch (e) {}
+  if (!q) q = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+  if (q) { $("codigo").value = q.toUpperCase(); verificar(q); }
+})();
+</script>
+</body>
+</html>
